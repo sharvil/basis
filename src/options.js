@@ -34,7 +34,7 @@ Options.prototype.getAuth = function() {
 };
 
 Options.prototype.getRootDir = function() {
-  return this.options_['rootDir'] || Path.join('..', 'client');
+  return this.options_['rootDir'] || Path.join('..', 'dotproduct');
 };
 
 Options.prototype.getArena = function() {
