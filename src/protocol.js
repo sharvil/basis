@@ -56,10 +56,10 @@ Protocol.buildPlayerLeft = function(player) {
 
 Protocol.buildPlayerPosition = function(player, opt_projectile) {
   var ret = [Protocol.S2CPacketType.PLAYER_POSITION, player.timestamp, player.id, player.direction, player.x, player.y, player.xVelocity, player.yVelocity, player.isSafe];
-  if(!opt_projectile) {
-    return ret;
+  if (opt_projectile) {
+    ret.push(opt_projectile);
   }
-  return ret.concat([opt_projectile.type, opt_projectile.level, opt_projectile.bounceCount, opt_projectile.x, opt_projectile.y, opt_projectile.xVelocity, opt_projectile.yVelocity]);
+  return ret;
 };
 
 Protocol.buildClockSyncReply = function(timestamp) {

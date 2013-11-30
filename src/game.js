@@ -5,7 +5,6 @@ var Logger = require('./logger.js').Logger;
 var MersenneTwister = require('./mersenne.js').MersenneTwister;
 var Player = require('./player.js').Player;
 var PlayerList = require('./playerlist.js').PlayerList;
-var Projectile = require('./projectile.js').Projectile;
 var Protocol = require('./protocol.js').Protocol;
 var Teams = require('./teams.js').Teams;
 
@@ -176,8 +175,7 @@ Game.prototype.onPositionPacket_ = function(player, message) {
   if(message.length <= 7) {
     this.playerList_.broadcast(player, Protocol.buildPlayerPosition(player));
   } else {
-    var projectile = new Projectile(message[7], message[8], message[9], message[10], message[11], message[12], message[13]);
-    this.playerList_.broadcast(player, Protocol.buildPlayerPosition(player, projectile));
+    this.playerList_.broadcast(player, Protocol.buildPlayerPosition(player, message[7]));
   }
 };
 
