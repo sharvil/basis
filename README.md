@@ -1,29 +1,24 @@
-basis
-==
+# basis
+
 basis is a game server for [dotproduct](http://github.com/sharvil/dotproduct), an action-packed,
 multiplayer space shooter. For a live demo, visit http://dotproduct.nanavati.net.
 
-Version
---
-1.0
-
-Tech
---
+### Tech
 basis is built on the following technologies:
  * [node.js](http://www.nodejs.org)
  * [Amazon DynamoDB](http://aws.amazon.com/dynamodb/)
  * [Google Closure Compiler](https://developers.google.com/closure/compiler/)
+ * [Google Closure Library](https://developers.google.com/closure/library/)
 
-Installing
---
+### Installing
+
 ```bash
   git clone https://github.com/sharvil/basis.git
   cd basis
   npm install
 ```
 
-Running
---
+### Running
 ```bash
   node src/server.js accessKeyId=<key> secretAccessKey=<key> [options]
 ```
@@ -34,6 +29,5 @@ Where `accessKeyId` and `secretAccessKey` are your [Amazon keys](http://docs.aws
  * rootDir=&lt;path to dotproduct&gt;
  * arena=&lt;name of arena to run&gt;
 
-License
---
+### License
 Apache 2.0
