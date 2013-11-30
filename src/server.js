@@ -206,8 +206,9 @@ Server.prototype.invalidateCacheItem_ = function(uri, error) {
 
 Server.prototype.compileJavascript_ = function(completion) {
   var options = { maxBuffer: 1024 * 1024 * 5 };
+  var compilerPath = Path.join(this.launchPath_, 'tools', 'closure_compiler.jar');
 
-  ChildProcess.exec('python ../closure/bin/calcdeps.py -i js/Application.js -o script --compiler_jar ../compiler.jar -p ../closure -p js', options, function(error, stdout, stderr) {
+  ChildProcess.exec('python ../closure/bin/calcdeps.py -i js/Application.js -o script --compiler_jar ' + compilerPath +  ' -p ../closure -p js', options, function(error, stdout, stderr) {
     completion(stdout);
   });
 };
@@ -234,7 +235,7 @@ Server.prototype.restartServer_ = function() {
     detached: true,
     stdio: 'ignore'
   };
-  ChildProcess.fork('./server.js', process.argv.slice(2), options).unref();
+  ChildProcess.fork('src/server.js', process.argv.slice(2), options).unref();
 };
 
 Server.prototype.shutdownServer_ = function() {
