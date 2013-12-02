@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import argparse
+import collections
 import json
 import math
 import os
@@ -25,7 +26,7 @@ def convertShip(name, settings):
   if radius == 0:
     radius = 14
 
-  jsonSettings = {}
+  jsonSettings = collections.OrderedDict()
   jsonSettings['name'] = name
   jsonSettings['xRadius'] = radius
   jsonSettings['yRadius'] = radius
@@ -40,7 +41,7 @@ def convertShip(name, settings):
   jsonSettings['rechargeRate'] = int(settings[name]['InitialRecharge']) / 1000.0
   jsonSettings['respawnDelay'] = 500
 
-  bullet = {}
+  bullet = collections.OrderedDict()
   bullet['fireEnergy'] = int(settings[name]['BulletFireEnergy'])
   bullet['speed'] = int(settings[name]['BulletSpeed']) / 1000.0
   bullet['fireDelay'] = int(settings[name]['BulletFireDelay'])
@@ -51,7 +52,7 @@ def convertShip(name, settings):
   bullet['maxLevel'] = int(settings[name]['MaxGuns']) - 1
   bullet['bounces'] = False
 
-  bomb = {}
+  bomb = collections.OrderedDict()
   bomb['fireEnergy'] = int(settings[name]['BombFireEnergy'])
   bomb['fireEnergyUpgrade'] = int(settings[name]['BombFireEnergyUpgrade'])
   bomb['speed'] = int(settings[name]['BombSpeed']) / 1000.0
@@ -68,7 +69,7 @@ def convertShip(name, settings):
   bomb['bounceCount'] = int(settings[name]['BombBounceCount'])
   bomb['recoilAcceleration'] = int(settings[name]['BombThrust']) / 1000.0
 
-  burst = {}
+  burst = collections.OrderedDict()
   burst['fireDelay'] = int(settings[name]['BulletFireDelay'])  # Assume burst fire delay is the same as the bullet fire delay
   burst['lifetime'] = int(settings['Bullet']['BulletAliveTime'])  # Assume burst lifetime is the same as a regular bullet
   burst['damage'] = int(settings['Bullet']['BulletDamageLevel']) + 4 * int(settings['Bullet']['BulletDamageUpgrade'])
@@ -84,26 +85,26 @@ def convertShip(name, settings):
   return jsonSettings
 
 def convertToJson(settings):
-  jsonSettings = {}
-  jsonSettings['game'] = {
+  jsonSettings = collections.OrderedDict()
+  jsonSettings['game'] = collections.OrderedDict({
     'killPoints': 20,
     'maxTeams': 2
-  }
-  jsonSettings['network'] = {
+  })
+  jsonSettings['network'] = collections.OrderedDict({
     'sendPositionDelay': int(settings['Misc']['SendPositionDelay']),
     'fastSendPositionDelay': max(1, int(settings['Misc']['SendPositionDelay']) / 4)
-  }
-  jsonSettings['map'] = {
+  })
+  jsonSettings['map'] = collections.OrderedDict({
     'width': 1024,
     'height': 1024,
     'spawnRadius': 500
-  }
-  jsonSettings['prize'] = {
+  })
+  jsonSettings['prize'] = collections.OrderedDict({
     'decayTime': 18000,
     'count': 50,
     'radius': 128,
     'weights': [1, 0, 0, 0, 0]
-  }
+  })
   jsonSettings['ships'] = [
     convertShip('Warbird', settings),
     convertShip('Javelin', settings),
