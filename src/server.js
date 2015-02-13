@@ -49,7 +49,8 @@ Server.CONTENT_TYPE_MAP_ = {
   '.html': 'text/html; charset=utf-8',
   '.png': 'image/png',
   '.bmp': 'image/x-ms-bmp',
-  '.jpg': 'image/jpeg'
+  '.jpg': 'image/jpeg',
+  '.wav': 'audio/wav'
 };
 
 // Maps from path name to {etag, headers, content, waiters, watcher, uri}.
