@@ -41,6 +41,10 @@ Options.prototype.getArena = function() {
   return this.options_['arena'] || 'svs';
 };
 
+Options.prototype.getDatabase = function() {
+  return this.options_['db'] || null;
+};
+
 Options.prototype.getPort = function() {
   return this.options_['port'] || 8000;
 };

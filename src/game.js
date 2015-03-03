@@ -1,5 +1,6 @@
 var Core = require('./core.js');
 var Connection = require('./connection.js').Connection;
+var Database = require('./database.js');
 var Flags = require('./flags.js').Flags;
 var Logger = require('./logger.js').Logger;
 var MersenneTwister = require('./mersenne.js').MersenneTwister;
@@ -17,6 +18,8 @@ var SHARVIL_FACEBOOK_ID = '615600520';
 var Game = function(options, restartFunction, shutdownFunction) {
   this.options_ = options;
   this.isLameduck_ = false;
+
+  this.database_ = new Database(options.getDatabase());
 
   var arena = this.options_.getArena();
   this.resources_ = JSON.parse(Fs.readFileSync('data/arenas/' + arena + '/resources.json'));
@@ -122,7 +125,7 @@ Game.prototype.onLoginPacket_ = function(connection, message) {
       connection.on(Protocol.C2SPacketType.TUTORIAL_COMPLETED, Core.bind(this.onTutorialCompleted_, this, player));
       connection.on(Protocol.C2SPacketType.FLAG_CAPTURED, Core.bind(this.onFlagCaptured_, this, player));
       Logger.log('[%s] entered the game.', player.name);
-    }, this), this.options_.getIsOffline());
+    }, this), this.database_);
   }, this);
 
   this.get_({ host: 'graph.facebook.com', path: '/me?access_token=' + message[0].accessToken }, completion);

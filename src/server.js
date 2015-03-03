@@ -5,7 +5,6 @@ var Logger = require('./logger.js').Logger;
 
 var ChildProcess = require('child_process');
 var Crypto = require('crypto');
-var Dynode = require('dynode');
 var Fs = require('fs');
 var HttpServer = require('http');
 var Path = require('path');
@@ -19,7 +18,6 @@ var Server = function() {
   var rootDir = options.getRootDir();
   this.launchPath_ = process.cwd();
   process.chdir(rootDir);
-  Dynode.auth(options.getAuth());
 
   this.httpServer_ = HttpServer.createServer(Core.bind(this.onHttpRequest_, this));
   this.httpServer_.listen(options.getPort(), Core.bind(function() {
@@ -27,6 +25,7 @@ var Server = function() {
     Logger.log('  port: ' + options.getPort());
     Logger.log('  path: ' + options.getRootDir());
     Logger.log('  arena: ' + options.getArena());
+    Logger.log('  database: ' + options.getDatabase());
   }, this));
 
   this.websocketServer_ = new WebSocketServer({ httpServer: this.httpServer_ });

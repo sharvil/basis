@@ -1,9 +1,8 @@
 var Core = require('./core.js');
 
-var Dynode = require('dynode');
-
-var Player = function(connection, id, name, team, completion, opt_skipDatabase) {
+var Player = function(connection, id, name, team, completion, database) {
   this.connection_ = connection;
+  this.database_ = database;
 
   this.id = id;
   this.name = name;
@@ -29,18 +28,22 @@ var Player = function(connection, id, name, team, completion, opt_skipDatabase) 
     losses: 0
   };
 
-  if(!opt_skipDatabase) {
-    this.loadFromDatabase_(completion);
-  } else {
-    completion(this);
-  }
+  this.loadFromDatabase_(completion);
 };
 
-Player.TABLE_NAME_ = 'dotproduct.Player';
+Player.TABLE_NAME_ = 'player';
 
-Player.unban = function(playerId, completion) {
-  Dynode.updateItem(Player.TABLE_NAME_, playerId, { isBanned: false }, function(error, result) {
-    completion(!error);
+Player.unban = function(database, playerId, completion) {
+  // Read-modify-write on the player object.
+  database.get(Player.TABLE_NAME_, playerId, function(error, result) {
+    if (error) {
+      completion(!error);
+    } else {
+      result.isBanned = false;
+      database.set(Player.TABLE_NAME_, playerId, function(error) {
+        completion(!error);
+      });
+    }
   });
 };
 
@@ -61,17 +64,16 @@ Player.prototype.loadFromDatabase_ = function(completion) {
   // Get user data from database and update object. If we couldn't find
   // any user data, create a new row as this is a new user.
   var self = this;
-  Dynode.getItem(Player.TABLE_NAME_, this.id, function(error, result) {
+  this.database_.get(Player.TABLE_NAME_, this.id, function(error, result) {
     if (result) {
-      self.isBanned = (result.isBanned == 'true');
-      self.hasCompletedTutorial = (result.hasCompletedTutorial == 'true');
+      self.isBanned = result.isBanned || false;
+      self.hasCompletedTutorial = result.hasCompletedTutorial || false;
       self.score.points = result.points || 0;
       self.score.wins = result.wins || 0;
       self.score.losses = result.losses || 0;
       completion(self);
     } else {
       var item = {
-        id: self.id,
         name: self.name,
         isBanned: self.isBanned,
         hasCompletedTutorial: self.hasCompletedTutorial,
@@ -80,7 +82,7 @@ Player.prototype.loadFromDatabase_ = function(completion) {
         losses: self.score.losses
       };
 
-      Dynode.putItem(Player.TABLE_NAME_, item, {}, function() {
+      self.database_.set(Player.TABLE_NAME_, self.id, item, function() {
         completion(self);
       });
     }
@@ -89,6 +91,7 @@ Player.prototype.loadFromDatabase_ = function(completion) {
 
 Player.prototype.saveToDatabase_ = function(completion) {
   var values = {
+    name: this.name,
     isBanned: this.isBanned,
     hasCompletedTutorial: this.hasCompletedTutorial,
     points: this.score.points,
@@ -96,7 +99,7 @@ Player.prototype.saveToDatabase_ = function(completion) {
     losses: this.score.losses
   };
 
-  Dynode.updateItem(Player.TABLE_NAME_, this.id, values, function() {
+  this.database_.set(Player.TABLE_NAME_, this.id, values, function() {
     completion();
   });
 };

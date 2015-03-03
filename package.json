@@ -2,7 +2,7 @@
   "name": "basis",
   "author": "Sharvil Nanavati <sharvil.nanavati@gmail.com>",
   "description": "Game server for dotproduct",
-  "version": "1.0.0",
+  "version": "1.0.1",
 
   "repository": {
     "type": "git",
@@ -30,9 +30,9 @@
   },
 
   "dependencies" : {
-    "dynode"     :  "0.6.x",
-    "node-oauth" :  "0.1.x",
-    "oauth"      :  "0.9.10",
-    "websocket"  :  "1.0.x"
+    "node-leveldb":  "^1.0.0",
+    "node-oauth"  :  "0.1.x",
+    "oauth"       :  "0.9.10",
+    "websocket"   :  "1.0.x"
   }
 }
