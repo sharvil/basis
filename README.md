@@ -6,8 +6,8 @@ multiplayer space shooter. For a live demo, visit http://dotproduct.nanavati.net
 ### Tech
 basis is built on the following technologies:
 
- * [node.js](http://www.nodejs.org)
- * [Amazon DynamoDB](http://aws.amazon.com/dynamodb/)
+ * [Node.js](http://www.nodejs.org)
+ * [LevelDB](https://github.com/google/leveldb)
  * [Google Closure Compiler](https://developers.google.com/closure/compiler/)
  * [Google Closure Library](https://developers.google.com/closure/library/)
 
@@ -21,15 +21,15 @@ basis is built on the following technologies:
 
 ### Running
 ```bash
-  node src/server.js accessKeyId=<key> secretAccessKey=<key> [options]
+  node src/server.js [options]
 ```
 
-Where `accessKeyId` and `secretAccessKey` are your [Amazon keys](http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSGettingStartedGuide/AWSCredentials.html) which will be used to store player stats in DynamoDB.
 `options` consists of zero or more of the following:
 
  * port=&lt;port number to listen on&gt;
  * rootDir=&lt;path to dotproduct&gt;
  * arena=&lt;name of arena to run&gt;
+ * db=&lt;name of database to use&gt;
 
 ### License
 Apache 2.0
