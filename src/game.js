@@ -1,6 +1,6 @@
+var Authenticator = require('./authenticator.js');
 var Core = require('./core.js');
 var Connection = require('./connection.js');
-var Database = require('./database.js');
 var Flags = require('./flags.js');
 var Logger = require('./logger.js');
 var MersenneTwister = require('./mersenne.js');
@@ -10,16 +10,14 @@ var Protocol = require('./protocol.js');
 var Teams = require('./teams.js');
 
 var Fs = require('fs');
-var Https = require('https');
 var Util = require('util');
 
 var SHARVIL_FACEBOOK_ID = '615600520';
 
-var Game = function(options, restartFunction, shutdownFunction) {
+var Game = function(options, database, restartFunction, shutdownFunction) {
   this.options_ = options;
+  this.database_ = database;
   this.isLameduck_ = false;
-
-  this.database_ = new Database(options.getDatabase());
 
   var arena = this.options_.getArena();
   this.resources_ = JSON.parse(Fs.readFileSync('data/arenas/' + arena + '/resources.json'));
@@ -45,28 +43,6 @@ var Game = function(options, restartFunction, shutdownFunction) {
 
 Game.PRIZE_SEED_UPDATE_PERIOD_ = 2 * 60 * 1000;
 
-// Hack
-Game.prototype.get_ = function(options, completion) {
-  if(this.options_.getIsOffline()) {
-    if (this.hack_ === undefined) {
-      this.hack_ = 0;
-    }
-    ++this.hack_;
-    completion({ id: SHARVIL_FACEBOOK_ID + this.hack_, name: 'Sharvil Nanavati ' + this.hack_ });
-    return;
-  }
-
-  Https.get(options, function(result) {
-    var collectedResponse = '';
-    result.on('data', function(data) {
-      collectedResponse += data.toString();
-    });
-    result.on('end', function() {
-      completion(JSON.parse(collectedResponse));
-    });
-  });
-};
-
 Game.prototype.addConnection = function(webSocket) {
   var connection = new Connection(this.options_, webSocket);
   connection.on('close', Core.bind(this.removeConnection, this));
@@ -86,22 +62,22 @@ Game.prototype.onPrizeSeedUpdate_ = function() {
 };
 
 Game.prototype.onLoginPacket_ = function(connection, message) {
-  var completion = Core.bind(function(facebookData) {
-    if(facebookData.error) {
-      console.error('Error logging user in: ' + Util.inspect(facebookData));
+  var completion = Core.bind(function(authResponse) {
+    if(authResponse.error) {
+      console.error('Error logging user in: ' + Util.inspect(authResponse));
       connection.close();
       return;
     }
 
     // Remove any existing players with the same id.
-    var oldPlayer = this.playerList_.findById(facebookData.id);
+    var oldPlayer = this.playerList_.findById(authResponse.id);
     if(oldPlayer) {
       this.onPlayerLeft_(oldPlayer);
     }
 
     // Add the new player to the game.
     var team = this.teamAllocator_.placeOnTeam(this.playerList_);
-    new Player(connection, facebookData.id, facebookData.name, team, Core.bind(function(player) {
+    new Player(connection, authResponse.id, authResponse.name, team, Core.bind(function(player) {
       if(player.isBanned && player.id != SHARVIL_FACEBOOK_ID) {
         Logger.log('Rejecting banned player: ' + player.name);
         connection.close();
@@ -128,7 +104,7 @@ Game.prototype.onLoginPacket_ = function(connection, message) {
     }, this), this.database_);
   }, this);
 
-  this.get_({ host: 'graph.facebook.com', path: '/me?access_token=' + message[0].accessToken }, completion);
+  Authenticator.authenticate(message[0].strategy, message[0].accessToken, completion);
 };
 
 Game.prototype.onStartGamePacket_ = function(player, message) {

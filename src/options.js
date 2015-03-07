@@ -30,10 +30,6 @@ Options.prototype.getPort = function() {
   return this.options_['port'] || 8000;
 };
 
-Options.prototype.getIsOffline = function() {
-  return this.options_['offline'] || false;
-};
-
 Options.prototype.getRandomSeed = function() {
   return parseInt(this.options_['seed']) || new Date().getTime();
 };

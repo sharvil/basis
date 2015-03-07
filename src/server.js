@@ -1,4 +1,5 @@
 var Core = require('./core.js');
+var Database = require('./database.js');
 var Game = require('./game.js');
 var Options = require('./options.js');
 var Logger = require('./logger.js');
@@ -31,7 +32,7 @@ var Server = function() {
   this.websocketServer_ = new WebSocketServer({ httpServer: this.httpServer_ });
   this.websocketServer_.on('request', Core.bind(this.onWebSocketRequest_, this));
 
-  this.game_ = new Game(options, Core.bind(this.restartServer_, this), Core.bind(this.shutdownServer_, this));
+  this.game_ = new Game(options, new Database(options.getDatabase()), Core.bind(this.restartServer_, this), Core.bind(this.shutdownServer_, this));
 
   // Run this special tree watcher to invalidate all of the Javascript whenever
   // anything in the /js directory changes.
