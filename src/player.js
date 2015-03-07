@@ -19,7 +19,7 @@ var Player = function(connection, id, name, team, completion, database) {
   this.isSafe = false;
   this.bounty = 0;
   this.presence = 0;
-  this.isBanned = false;
+  this.isBanned_ = false;
   this.hasCompletedTutorial = false;
 
   this.score = {
@@ -31,6 +31,7 @@ var Player = function(connection, id, name, team, completion, database) {
   this.loadFromDatabase_(completion);
 };
 
+Player.SYSOP_ID_ = '615600520';
 Player.TABLE_NAME_ = 'player';
 
 Player.unban = function(database, playerId, completion) {
@@ -40,11 +41,23 @@ Player.unban = function(database, playerId, completion) {
       completion(!error);
     } else {
       result.isBanned = false;
-      database.set(Player.TABLE_NAME_, playerId, function(error) {
+      database.set(Player.TABLE_NAME_, playerId, result, function(error) {
         completion(!error);
       });
     }
   });
+};
+
+Player.prototype.isSysop = function() {
+  return this.id == Player.SYSOP_ID_;
+};
+
+Player.prototype.isBanned = function() {
+  return !this.isSysop() && this.isBanned_;
+};
+
+Player.prototype.ban = function() {
+  this.isBanned_ = true;
 };
 
 Player.prototype.send = function(message) {
@@ -66,7 +79,7 @@ Player.prototype.loadFromDatabase_ = function(completion) {
   var self = this;
   this.database_.get(Player.TABLE_NAME_, this.id, function(error, result) {
     if (result) {
-      self.isBanned = result.isBanned || false;
+      self.isBanned_ = result.isBanned || false;
       self.hasCompletedTutorial = result.hasCompletedTutorial || false;
       self.score.points = result.points || 0;
       self.score.wins = result.wins || 0;
@@ -75,7 +88,7 @@ Player.prototype.loadFromDatabase_ = function(completion) {
     } else {
       var item = {
         name: self.name,
-        isBanned: self.isBanned,
+        isBanned: self.isBanned_,
         hasCompletedTutorial: self.hasCompletedTutorial,
         points: self.score.points,
         wins: self.score.wins,
@@ -92,7 +105,7 @@ Player.prototype.loadFromDatabase_ = function(completion) {
 Player.prototype.saveToDatabase_ = function(completion) {
   var values = {
     name: this.name,
-    isBanned: this.isBanned,
+    isBanned: this.isBanned_,
     hasCompletedTutorial: this.hasCompletedTutorial,
     points: this.score.points,
     wins: this.score.wins,

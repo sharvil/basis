@@ -12,8 +12,6 @@ var Teams = require('./teams.js');
 var Fs = require('fs');
 var Util = require('util');
 
-var SHARVIL_FACEBOOK_ID = '615600520';
-
 var Game = function(options, database, restartFunction, shutdownFunction) {
   this.options_ = options;
   this.database_ = database;
@@ -78,7 +76,7 @@ Game.prototype.onLoginPacket_ = function(connection, message) {
     // Add the new player to the game.
     var team = this.teamAllocator_.placeOnTeam(this.playerList_);
     new Player(connection, authResponse.id, authResponse.name, team, Core.bind(function(player) {
-      if(player.isBanned && player.id != SHARVIL_FACEBOOK_ID) {
+      if(player.isBanned()) {
         Logger.log('Rejecting banned player: ' + player.name);
         connection.close();
         return;
@@ -187,7 +185,7 @@ Game.prototype.onClockSyncPacket_ = function(player, message) {
 Game.prototype.onChatMessagePacket_ = function(player, message) {
   var text = message[0];
 
-  if(player.id == SHARVIL_FACEBOOK_ID && text[0] == '*') {
+  if(player.isSysop() && text[0] == '*') {
     var command = text.split(' ')[0];
     var rest = text.split(' ').slice(1).join(' ');
     switch(command) {
@@ -204,7 +202,7 @@ Game.prototype.onChatMessagePacket_ = function(player, message) {
         if(!bannedPlayer) {
           player.send(Protocol.buildChatMessage(null, 'No player found with id ' + rest));
         } else {
-          bannedPlayer.isBanned = true;
+          bannedPlayer.ban();
           bannedPlayer.send(Protocol.buildChatMessage(null, 'You have been banned from the game. Please contact sharvil.nanavati@gmail.com if you believe the ban was made in error.'));
           player.send(Protocol.buildChatMessage(null, 'Player ' + bannedPlayer.name + '(' + bannedPlayer.id + ') banned.'));
           this.onPlayerLeft_(bannedPlayer);
@@ -212,7 +210,7 @@ Game.prototype.onChatMessagePacket_ = function(player, message) {
         break;
 
       case '*unban':
-        Player.unban(rest, function(success) {
+        Player.unban(this.database_, rest, function(success) {
           if(success) {
             player.send(Protocol.buildChatMessage(null, 'Player successfully unbanned.'));
           } else {
