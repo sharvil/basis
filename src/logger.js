@@ -5,4 +5,4 @@ Logger.log = function(format) {
   console.log.apply(null, arguments);
 };
 
-exports.Logger = Logger;
+module.exports = Logger;

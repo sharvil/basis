@@ -46,4 +46,4 @@ PlayerList.prototype.broadcastAll = function(message) {
   });
 }
 
-exports.PlayerList = PlayerList;
+module.exports = PlayerList;

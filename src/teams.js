@@ -1,4 +1,4 @@
-var MersenneTwister = require('./mersenne.js').MersenneTwister;
+var MersenneTwister = require('./mersenne.js');
 
 var MAX_TEAMS = 10000;
 
@@ -112,7 +112,8 @@ FlexibleBalanced.prototype.placeOnTeam = function(playerList) {
   }
 };
 
-exports.Teams = {};
-exports.Teams.FreeForAll = FreeForAll;
-exports.Teams.Random = Random;
-exports.Teams.UniformBalanced = UniformBalanced;
+module.exports = {
+  'FreeForAll': FreeForAll,
+  'Random': Random,
+  'UniformBalanced': UniformBalanced
+};

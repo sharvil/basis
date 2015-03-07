@@ -29,10 +29,11 @@
     "node": ">=0.10.5"
   },
 
-  "dependencies" : {
-    "node-leveldb":  "^1.0.0",
-    "node-oauth"  :  "0.1.x",
-    "oauth"       :  "0.9.10",
-    "websocket"   :  "1.0.x"
+  "dependencies": {
+    "node-leveldb": "^1.0.0",
+    "node-oauth": "^0.1.0",
+    "oauth": "^0.9.10",
+    "watch": "^0.14.0",
+    "websocket": "^1.0.0"
   }
 }

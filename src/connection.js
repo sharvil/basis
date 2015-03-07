@@ -50,4 +50,4 @@ Connection.prototype.onMessage_ = function(message) {
   }
 };
 
-exports.Connection = Connection;
+module.exports = Connection;

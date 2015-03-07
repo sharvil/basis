@@ -1,7 +1,7 @@
 var Core = require('./core.js');
-var Game = require('./game.js').Game;
-var Options = require('./options.js').Options;
-var Logger = require('./logger.js').Logger;
+var Game = require('./game.js');
+var Options = require('./options.js');
+var Logger = require('./logger.js');
 
 var ChildProcess = require('child_process');
 var Crypto = require('crypto');

@@ -44,4 +44,4 @@ Flags.prototype.forEach = function(closure) {
   }
 };
 
-exports.Flags = Flags;
+module.exports = Flags;

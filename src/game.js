@@ -1,13 +1,13 @@
 var Core = require('./core.js');
-var Connection = require('./connection.js').Connection;
+var Connection = require('./connection.js');
 var Database = require('./database.js');
-var Flags = require('./flags.js').Flags;
-var Logger = require('./logger.js').Logger;
-var MersenneTwister = require('./mersenne.js').MersenneTwister;
-var Player = require('./player.js').Player;
-var PlayerList = require('./playerlist.js').PlayerList;
-var Protocol = require('./protocol.js').Protocol;
-var Teams = require('./teams.js').Teams;
+var Flags = require('./flags.js');
+var Logger = require('./logger.js');
+var MersenneTwister = require('./mersenne.js');
+var Player = require('./player.js');
+var PlayerList = require('./playerlist.js');
+var Protocol = require('./protocol.js');
+var Teams = require('./teams.js');
 
 var Fs = require('fs');
 var Https = require('https');
@@ -303,4 +303,4 @@ Game.prototype.onFlagCaptured_ = function(player, message) {
   }
 };
 
-exports.Game = Game;
+module.exports = Game;

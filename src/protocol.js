@@ -99,4 +99,4 @@ Protocol.buildFlagUpdate = function(flag) {
   return [Protocol.S2CPacketType.FLAG_UPDATE, flag.id, flag.team, flag.xTile, flag.yTile];
 };
 
-exports.Protocol = Protocol;
+module.exports = Protocol;

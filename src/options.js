@@ -1,15 +1,6 @@
 var Core = require('./core.js');
-var Logger = require('./logger.js').Logger;
+var Logger = require('./logger.js');
 var Path = require('path');
-
-// Try to load credentials from aws.js. If the file doesn't exist, log
-// the error and expect arguments on the command line instead.
-var Aws = {};
-try {
-  Aws = require('./aws.js');
-} catch (e) {
-  Logger.log('aws.js not found, must specify accessKeyId and secretAccessKey on command line.');
-}
 
 var Options = function() {
   this.options_ = {};
@@ -21,16 +12,6 @@ var Options = function() {
       this.options_[kv[0]] = kv[1];
     }
   }
-};
-
-Options.prototype.getAuth = function() {
-  if (this.options_['accessKeyId']) {
-    Aws.accessKeyId = this.options_['accessKeyId'];
-  }
-  if (this.options_['secretAccessKey']) {
-    Aws.secretAccessKey = this.options_['secretAccessKey'];
-  }
-  return Aws;
 };
 
 Options.prototype.getRootDir = function() {
@@ -61,4 +42,4 @@ Options.prototype.getDumpPackets = function() {
   return this.options_['dumpPackets'] || false;
 }
 
-exports.Options = Options;
+module.exports = Options;

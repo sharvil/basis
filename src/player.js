@@ -104,4 +104,4 @@ Player.prototype.saveToDatabase_ = function(completion) {
   });
 };
 
-exports.Player = Player;
+module.exports = Player;

@@ -195,4 +195,4 @@ MersenneTwister.prototype.genrand_res53 = function() {
 
 /* These real versions are due to Isaku Wada, 2002/01/09 added */
 
-exports.MersenneTwister = MersenneTwister;
+module.exports = MersenneTwister;
