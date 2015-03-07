@@ -1,4 +1,5 @@
 var Https = require('https');
+var Moniker = require('moniker');
 
 var Authenticator = {};
 
@@ -22,7 +23,7 @@ Authenticator.facebookAuth_ = function(token, completion) {
 Authenticator.anonymousAuth_ = function(token, completion) {
   var authResponse = {
     id: 'anon/' + Authenticator.UNIQUE_ID_++,
-    name: 'testing'
+    name: Moniker.choose()
   };
 
   completion(authResponse);

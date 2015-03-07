@@ -30,6 +30,7 @@
   },
 
   "dependencies": {
+    "moniker": "^0.1.0",
     "node-leveldb": "^1.0.0",
     "node-oauth": "^0.1.0",
     "oauth": "^0.9.10",
