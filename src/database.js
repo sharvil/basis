@@ -11,6 +11,7 @@ var Database = function(dbName) {
 Database.prototype.get = function(table, key, completion) {
   if (!this.db_) {
     completion(new Error('Running without a database.'), null);
+    return;
   }
 
   var value = this.db_.get(table + '/' + key);
@@ -24,10 +25,18 @@ Database.prototype.get = function(table, key, completion) {
 Database.prototype.set = function(table, key, valueJson, completion) {
   if (!this.db_) {
     completion(new Error('Running without a database.'));
+    return;
   }
 
   this.db_.set(table + '/' + key, JSON.stringify(valueJson));
   completion(null);
+};
+
+Database.prototype.close = function() {
+  if (this.db_) {
+    this.db_.close();
+    this.db_ = null;
+  }
 };
 
 module.exports = Database;

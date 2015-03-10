@@ -225,6 +225,7 @@ Game.prototype.onChatMessagePacket_ = function(player, message) {
 
       case '*restart':
         if (!this.isLameduck_) {
+          this.database_.close();
           this.restartFunction_();
           this.isLameduck_ = true;
           player.send(Protocol.buildChatMessage(null, 'Forked a new server and entered lameduck mode.'));
@@ -235,6 +236,7 @@ Game.prototype.onChatMessagePacket_ = function(player, message) {
         break;
 
       case '*shutdown':
+        this.database_.close();
         this.shutdownFunction_();
         break;
 
