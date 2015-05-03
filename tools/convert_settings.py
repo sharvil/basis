@@ -24,6 +24,16 @@ def parseConfig(settingsFile):
       settings[curSection][key] = value
   return settings
 
+def convertPrizeWeights(prizeSettings):
+  prizeWeights = []
+  prizeWeights.append(0)  # PrizeType.NONE
+  prizeWeights.append(int(prizeSettings['Gun']))
+  prizeWeights.append(int(prizeSettings['Bomb']))
+  prizeWeights.append(int(prizeSettings['QuickCharge']))
+  prizeWeights.append(int(prizeSettings['BouncingBullets']))
+  prizeWeights.append(int(prizeSettings['MultiFire']))
+  return prizeWeights
+
 def convertShip(name, settings):
   radius = int(settings[name]['Radius'])
   if radius == 0:
@@ -53,6 +63,7 @@ def convertShip(name, settings):
   bullet['initialLevel'] = int(settings[name]['InitialGuns']) - 1
   bullet['maxLevel'] = int(settings[name]['MaxGuns']) - 1
   bullet['bounces'] = False
+  bullet['doubleBarrel'] = int(settings[name]['DoubleBarrel']) != 0
 
   if int(settings[name]['MultiFireAngle']) != 0:
     bullet['multifire'] = collections.OrderedDict()
@@ -111,7 +122,7 @@ def convertToJson(settings):
     'decayTime': 18000,
     'count': 50,
     'radius': 128,
-    'weights': [1, 0, 0, 0, 0, 0]
+    'weights': convertPrizeWeights(settings['PrizeWeight'])
   })
   jsonSettings['ships'] = [
     convertShip('Warbird', settings),
