@@ -8,6 +8,9 @@ import os
 import struct
 import sys
 
+ANGLE_FACTOR = 2 * math.pi / 40000.0
+SPEED_FACTOR = 1 / 1000.0
+
 def parseConfig(settingsFile):
   settings = {}
   curSection = None
@@ -28,11 +31,10 @@ def convertShip(name, settings):
 
   jsonSettings = collections.OrderedDict()
   jsonSettings['name'] = name
-  jsonSettings['xRadius'] = radius
-  jsonSettings['yRadius'] = radius
+  jsonSettings['radius'] = radius
   jsonSettings['bounceFactor'] = 16.0 / int(settings['Misc']['BounceFactor'])
-  jsonSettings['rotationRadiansPerTick'] = 2 * math.pi * int(settings[name]['InitialRotation']) / 40000.0
-  jsonSettings['speedPixelsPerTick'] = int(settings[name]['InitialSpeed']) / 1000.0
+  jsonSettings['rotationRadiansPerTick'] = int(settings[name]['InitialRotation']) * ANGLE_FACTOR
+  jsonSettings['speedPixelsPerTick'] = int(settings[name]['InitialSpeed']) * SPEED_FACTOR
   jsonSettings['maxEnergy'] = int(settings[name]['InitialEnergy'])
   jsonSettings['accelerationPerTick'] = int(settings[name]['InitialThrust']) / 1000.0
   jsonSettings['afterburnerMaxSpeed'] = jsonSettings['speedPixelsPerTick'] * 2
@@ -43,7 +45,7 @@ def convertShip(name, settings):
 
   bullet = collections.OrderedDict()
   bullet['fireEnergy'] = int(settings[name]['BulletFireEnergy'])
-  bullet['speed'] = int(settings[name]['BulletSpeed']) / 1000.0
+  bullet['speed'] = int(settings[name]['BulletSpeed']) * SPEED_FACTOR
   bullet['fireDelay'] = int(settings[name]['BulletFireDelay'])
   bullet['lifetime'] = int(settings['Bullet']['BulletAliveTime'])
   bullet['damage'] = int(settings['Bullet']['BulletDamageLevel'])
@@ -52,10 +54,16 @@ def convertShip(name, settings):
   bullet['maxLevel'] = int(settings[name]['MaxGuns']) - 1
   bullet['bounces'] = False
 
+  if int(settings[name]['MultiFireAngle']) != 0:
+    bullet['multifire'] = collections.OrderedDict()
+    bullet['multifire']['fireEnergy'] = int(settings[name]['MultiFireEnergy'])
+    bullet['multifire']['fireDelay'] = int(settings[name]['MultiFireDelay'])
+    bullet['multifire']['angle'] = int(settings[name]['MultiFireAngle']) * ANGLE_FACTOR
+
   bomb = collections.OrderedDict()
   bomb['fireEnergy'] = int(settings[name]['BombFireEnergy'])
   bomb['fireEnergyUpgrade'] = int(settings[name]['BombFireEnergyUpgrade'])
-  bomb['speed'] = int(settings[name]['BombSpeed']) / 1000.0
+  bomb['speed'] = int(settings[name]['BombSpeed']) * SPEED_FACTOR
   bomb['fireDelay'] = int(settings[name]['BombFireDelay'])
   bomb['lifetime'] = int(settings['Bomb']['BombAliveTime'])
   bomb['damage'] = int(settings['Bomb']['BombDamageLevel'])
@@ -73,7 +81,7 @@ def convertShip(name, settings):
   burst['fireDelay'] = int(settings[name]['BulletFireDelay'])  # Assume burst fire delay is the same as the bullet fire delay
   burst['lifetime'] = int(settings['Bullet']['BulletAliveTime'])  # Assume burst lifetime is the same as a regular bullet
   burst['damage'] = int(settings['Bullet']['BulletDamageLevel']) + 4 * int(settings['Bullet']['BulletDamageUpgrade'])
-  burst['speed'] = int(settings[name]['BurstSpeed']) / 1000.0
+  burst['speed'] = int(settings[name]['BurstSpeed']) * SPEED_FACTOR
   burst['shrapnelCount'] = int(settings[name]['BurstShrapnel'])
   burst['initialCount'] = int(settings[name]['InitialBurst'])
   burst['maxCount'] = int(settings[name]['BurstMax'])
@@ -103,7 +111,7 @@ def convertToJson(settings):
     'decayTime': 18000,
     'count': 50,
     'radius': 128,
-    'weights': [1, 0, 0, 0, 0]
+    'weights': [1, 0, 0, 0, 0, 0]
   })
   jsonSettings['ships'] = [
     convertShip('Warbird', settings),
