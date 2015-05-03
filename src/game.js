@@ -116,7 +116,7 @@ Game.prototype.onStartGamePacket_ = function(player, message) {
   });
 
   this.playerList_.forEach(function(other) {
-    if(player != other) {
+    if(other.started && player != other) {
       player.send(Protocol.buildPlayerJoined(other));
       player.send(Protocol.buildPlayerPosition(other));
       player.send(Protocol.buildScoreUpdate(other));
