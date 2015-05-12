@@ -62,8 +62,8 @@ Protocol.buildClockSyncReply = function(timestamp) {
   return [Protocol.S2CPacketType.CLOCK_SYNC_REPLY, timestamp, Core.timestamp()];
 };
 
-Protocol.buildPlayerDeath = function(timestamp, x, y, player, killer, gainedBounty) {
-  return [Protocol.S2CPacketType.PLAYER_DIED, timestamp, x, y, player.id, killer.id, gainedBounty];
+Protocol.buildPlayerDeath = function(x, y, player, killer, gainedBounty) {
+  return [Protocol.S2CPacketType.PLAYER_DIED, x, y, player.id, killer.id, gainedBounty];
 };
 
 Protocol.buildChatMessage = function(player, message) {

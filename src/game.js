@@ -157,10 +157,9 @@ Game.prototype.onPositionPacket_ = function(player, message) {
 };
 
 Game.prototype.onPlayerDiedPacket_ = function(player, message) {
-  var timestamp = message[0];
-  var x = message[1];
-  var y = message[2];
-  var killerId = message[3];
+  var x = message[0];
+  var y = message[1];
+  var killerId = message[2];
   var killer = this.playerList_.findById(killerId);
 
   if(!killer) {
@@ -175,7 +174,7 @@ Game.prototype.onPlayerDiedPacket_ = function(player, message) {
   player.bounty = 0;
   player.isAlive = false;
 
-  this.playerList_.broadcast(player, Protocol.buildPlayerDeath(timestamp, x, y, player, killer, gainedBounty));
+  this.playerList_.broadcast(player, Protocol.buildPlayerDeath(x, y, player, killer, gainedBounty));
 };
 
 Game.prototype.onClockSyncPacket_ = function(player, message) {
