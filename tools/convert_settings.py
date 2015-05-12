@@ -97,9 +97,16 @@ def convertShip(name, settings):
   burst['initialCount'] = int(settings[name]['InitialBurst'])
   burst['maxCount'] = int(settings[name]['BurstMax'])
 
+  decoy = collections.OrderedDict()
+  decoy['fireDelay'] = bullet['fireDelay']  # Assume decoy fire delay is the same as the bullet fire delay
+  decoy['lifetime'] = int(settings['Misc']['DecoyAliveTime'])
+  decoy['initialCount'] = int(settings[name]['InitialDecoy'])
+  decoy['maxCount'] = int(settings[name]['DecoyMax'])
+
   jsonSettings['bullet'] = bullet
   jsonSettings['bomb'] = bomb
   jsonSettings['burst'] = burst
+  jsonSettings['decoy'] = decoy
 
   return jsonSettings
 
