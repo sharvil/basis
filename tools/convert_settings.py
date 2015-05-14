@@ -62,7 +62,7 @@ def convertShip(name, settings):
   bullet['damageUpgrade'] = int(settings['Bullet']['BulletDamageUpgrade'])
   bullet['initialLevel'] = int(settings[name]['InitialGuns']) - 1
   bullet['maxLevel'] = int(settings[name]['MaxGuns']) - 1
-  bullet['bounces'] = False
+  bullet['bounces'] = True
   bullet['doubleBarrel'] = int(settings[name]['DoubleBarrel']) != 0
 
   if int(settings[name]['MultiFireAngle']) != 0:
