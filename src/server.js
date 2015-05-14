@@ -50,7 +50,8 @@ Server.CONTENT_TYPE_MAP_ = {
   '.png': 'image/png',
   '.bmp': 'image/x-ms-bmp',
   '.jpg': 'image/jpeg',
-  '.wav': 'audio/wav'
+  '.wav': 'audio/wav',
+  '.bin': 'application/octet-stream'
 };
 
 // Maps from path name to {etag, headers, content, waiters, watcher, uri}.
