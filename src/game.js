@@ -1,9 +1,11 @@
 var Authenticator = require('./authenticator.js');
 var Core = require('./core.js');
 var Connection = require('./connection.js');
+var Database = require('./database.js');
 var Flags = require('./flags.js');
 var Logger = require('./logger.js');
 var MersenneTwister = require('./mersenne.js');
+var Options = require('./options.js');
 var Player = require('./player.js');
 var PlayerList = require('./playerlist.js');
 var Protocol = require('./protocol.js');
@@ -12,12 +14,10 @@ var Teams = require('./teams.js');
 var Fs = require('fs');
 var Util = require('util');
 
-var Game = function(options, database, restartFunction, shutdownFunction) {
-  this.options_ = options;
-  this.database_ = database;
+var Game = function(arena, restartFunction, shutdownFunction) {
   this.isLameduck_ = false;
 
-  var arena = this.options_.getArena();
+  this.database_ = new Database('data/arenas/' + arena + '/db');
   this.resources_ = JSON.parse(Fs.readFileSync('data/arenas/' + arena + '/resources.json'));
   this.settings_ = JSON.parse(Fs.readFileSync('data/arenas/' + arena + '/settings.json'));
   this.map_ = JSON.parse(Fs.readFileSync('data/arenas/' + arena + '/map.json'));
@@ -34,7 +34,7 @@ var Game = function(options, database, restartFunction, shutdownFunction) {
   this.teamAllocator_ = new Teams.UniformBalanced(this.settings_.game.maxTeams);
   this.flags_ = new Flags(this.settings_, this.map_, this.tileProperties_);
 
-  this.prng_ = new MersenneTwister(options.getRandomSeed());
+  this.prng_ = new MersenneTwister(Options.getRandomSeed());
   this.onPrizeSeedUpdate_();
   setInterval(Core.bind(this.onPrizeSeedUpdate_, this), Game.PRIZE_SEED_UPDATE_PERIOD_);
 };
@@ -42,7 +42,7 @@ var Game = function(options, database, restartFunction, shutdownFunction) {
 Game.PRIZE_SEED_UPDATE_PERIOD_ = 2 * 60 * 1000;
 
 Game.prototype.addConnection = function(webSocket) {
-  var connection = new Connection(this.options_, webSocket);
+  var connection = new Connection(webSocket);
   connection.on('close', Core.bind(this.removeConnection, this));
   connection.on(Protocol.C2SPacketType.LOGIN, Core.bind(this.onLoginPacket_, this, connection));
 
@@ -51,6 +51,17 @@ Game.prototype.addConnection = function(webSocket) {
 
 Game.prototype.removeConnection = function(connection) {
   this.connections_.removeObject(connection);
+};
+
+// Called when this arena should be closed and put into lame duck mode.
+Game.prototype.close = function() {
+  if (this.isLameduck_) {
+    return;
+  }
+
+  this.isLameduck_ = true;
+  this.database_.close();
+  this.playerList_.broadcastAll(Protocol.buildChatMessage(null, 'This server is now closed. Refresh your browser to join the new server.'));
 };
 
 Game.prototype.onPrizeSeedUpdate_ = function() {
@@ -224,11 +235,9 @@ Game.prototype.onChatMessagePacket_ = function(player, message) {
 
       case '*restart':
         if (!this.isLameduck_) {
-          this.database_.close();
           this.restartFunction_();
           this.isLameduck_ = true;
           player.send(Protocol.buildChatMessage(null, 'Forked a new server and entered lameduck mode.'));
-          this.playerList_.broadcastAll(Protocol.buildChatMessage(null, 'This server is now closed. Refresh your browser to join the new server.'));
         } else {
           player.send(Protocol.buildChatMessage(null, 'Server is already in lameduck mode.'));
         }

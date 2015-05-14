@@ -1,5 +1,4 @@
 var Core = require('./core.js');
-var Database = require('./database.js');
 var Game = require('./game.js');
 var Options = require('./options.js');
 var Logger = require('./logger.js');
@@ -15,24 +14,30 @@ var WebSocketServer = require('websocket').server;
 var Zlib = require('zlib');
 
 var Server = function() {
-  var options = new Options();
-  var rootDir = options.getRootDir();
   this.launchPath_ = process.cwd();
-  process.chdir(rootDir);
+  process.chdir(Options.getRootDir());
 
   this.httpServer_ = HttpServer.createServer(Core.bind(this.onHttpRequest_, this));
-  this.httpServer_.listen(options.getPort(), Core.bind(function() {
+  this.httpServer_.listen(Options.getPort(), Core.bind(function() {
     Logger.log('basis started');
-    Logger.log('  port: ' + options.getPort());
-    Logger.log('  path: ' + options.getRootDir());
-    Logger.log('  arena: ' + options.getArena());
-    Logger.log('  database: ' + options.getDatabase());
+    Logger.log('  port: ' + Options.getPort());
+    Logger.log('  path: ' + Options.getRootDir());
+    for (var i in this.arenas_) {
+      Logger.log('  arena: ' + i);
+    }
   }, this));
 
   this.websocketServer_ = new WebSocketServer({ httpServer: this.httpServer_ });
   this.websocketServer_.on('request', Core.bind(this.onWebSocketRequest_, this));
 
-  this.game_ = new Game(options, new Database(options.getDatabase()), Core.bind(this.restartServer_, this), Core.bind(this.shutdownServer_, this));
+  this.arenas_ = {};
+
+  // Start up a new arena, one per directory under 'data/arenas/'.
+  var dirs = Fs.readdirSync('data/arenas');
+  for (var i = 0; i < dirs.length; ++i) {
+    var name = dirs[i];
+    this.arenas_[name] = new Game(name, Core.bind(this.restartServer_, this), Core.bind(this.shutdownServer_, this));
+  }
 
   // Run this special tree watcher to invalidate all of the Javascript whenever
   // anything in the /js directory changes.
@@ -216,19 +221,24 @@ Server.prototype.compileJavascript_ = function(completion) {
 };
 
 Server.prototype.onWebSocketRequest_ = function(request) {
-  if(request.resourceURL.pathname != Server.REQUEST_PATH_) {
+  if (request.resourceURL.pathname.indexOf(Server.REQUEST_PATH_) != 0) {
     request.reject(404);
     return;
   }
 
   try {
-    this.game_.addConnection(request.accept(Server.PROTOCOL_NAME_, request.origin));
+    var name = request.resourceURL.pathname.substr(Server.REQUEST_PATH_.length);
+    this.arenas_[name].addConnection(request.accept(Server.PROTOCOL_NAME_, request.origin));
   } catch (e) {
     Logger.log('Exception while accepting socket: ' + e);
   }
 };
 
 Server.prototype.restartServer_ = function() {
+  for (var i in this.arenas_) {
+    this.arenas_[i].close();
+  }
+
   this.websocketServer_.unmount();
   this.httpServer_.close();
 

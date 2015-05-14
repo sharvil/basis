@@ -1,12 +1,13 @@
 var Core = require('./core.js');
+var Options = require('./options.js');
 
 var Events = require('events');
 var Util = require('util');
 
-var Connection = function(options, webSocket) {
+var Connection = function(webSocket) {
   Events.EventEmitter.call(this);
 
-  this.dumpPackets_ = options.getDumpPackets();
+  this.dumpPackets_ = Options.getDumpPackets();
   this.socket_ = webSocket;
   this.socket_.on('message', Core.bind(this.onMessage_, this));
   this.socket_.on('close', Core.bind(this.emit, this, 'close', this));

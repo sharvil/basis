@@ -28,8 +28,6 @@ basis is built on the following technologies:
 
  * port=&lt;port number to listen on&gt;
  * rootDir=&lt;path to dotproduct&gt;
- * arena=&lt;name of arena to run&gt;
- * db=&lt;name of database to use&gt;
 
 ### License
 Apache 2.0
