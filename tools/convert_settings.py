@@ -47,8 +47,8 @@ def convertShip(name, settings):
   jsonSettings['speedPixelsPerTick'] = int(settings[name]['InitialSpeed']) * SPEED_FACTOR
   jsonSettings['maxEnergy'] = int(settings[name]['InitialEnergy'])
   jsonSettings['accelerationPerTick'] = int(settings[name]['InitialThrust']) / 1000.0
-  jsonSettings['afterburnerMaxSpeed'] = jsonSettings['speedPixelsPerTick'] * 2
-  jsonSettings['afterburnerAcceleration'] = 0.02
+  jsonSettings['afterburnerMaxSpeed'] = int(settings[name]['MaximumSpeed']) * SPEED_FACTOR
+  jsonSettings['afterburnerAcceleration'] = int(settings[name]['MaximumThrust']) / 1000.0
   jsonSettings['afterburnerEnergy'] = int(settings[name]['AfterburnerEnergy']) / 1000.0
   jsonSettings['rechargeRate'] = int(settings[name]['InitialRecharge']) / 1000.0
   jsonSettings['respawnDelay'] = 500
