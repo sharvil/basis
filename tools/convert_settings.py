@@ -51,7 +51,7 @@ def convertShip(name, settings):
   jsonSettings['afterburnerAcceleration'] = int(settings[name]['MaximumThrust']) / 1000.0
   jsonSettings['afterburnerEnergy'] = int(settings[name]['AfterburnerEnergy']) / 1000.0
   jsonSettings['rechargeRate'] = int(settings[name]['InitialRecharge']) / 1000.0
-  jsonSettings['respawnDelay'] = 500
+  jsonSettings['respawnDelay'] = int(settings['Kill']['EnterDelay'])
 
   bullet = collections.OrderedDict()
   bullet['fireEnergy'] = int(settings[name]['BulletFireEnergy'])
