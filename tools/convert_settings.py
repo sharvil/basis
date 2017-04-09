@@ -103,10 +103,19 @@ def convertShip(name, settings):
   decoy['initialCount'] = int(settings[name]['InitialDecoy'])
   decoy['maxCount'] = int(settings[name]['DecoyMax'])
 
+  repel = collections.OrderedDict()
+  repel['fireDelay'] = 50  # TODO: figure out what this should be
+  repel['initialCount'] = int(settings[name]['InitialRepel'])
+  repel['maxCount'] = int(settings[name]['RepelMax'])
+  repel['lifetime'] = int(settings['Repel']['RepelTime'])
+  repel['distance'] = int(settings['Repel']['RepelDistance'])
+  repel['speed'] = int(settings['Repel']['RepelSpeed']) * SPEED_FACTOR
+
   jsonSettings['bullet'] = bullet
   jsonSettings['bomb'] = bomb
   jsonSettings['burst'] = burst
   jsonSettings['decoy'] = decoy
+  jsonSettings['repel'] = repel
 
   return jsonSettings
 
