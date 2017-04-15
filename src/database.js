@@ -4,7 +4,7 @@ var Database = function(dbName) {
   this.db_ = null;
   if (dbName) {
     this.db_ = new LevelDB();
-	  this.db_.open(dbName);
+    this.db_.open(dbName);
   }
 };
 

@@ -40,8 +40,8 @@ var Server = function() {
   }
 
   // Run this special tree watcher to invalidate all of the Javascript whenever
-  // anything in the /js directory changes.
-  Watch.watchTree('js/', Core.bind(this.invalidateCacheItem_, this, '/js/Application.js', { errorCode: 'EINTR' }));
+  // anything in the 'out' directory changes.
+  Watch.watchTree('out/', Core.bind(this.invalidateCacheItem_, this, '/js/Application.js', { errorCode: 'EINTR' }));
 };
 
 Server.PROTOCOL_NAME_ = 'dotproduct.v1';
@@ -56,6 +56,7 @@ Server.CONTENT_TYPE_MAP_ = {
   '.bmp': 'image/x-ms-bmp',
   '.jpg': 'image/jpeg',
   '.wav': 'audio/wav',
+  '.mp3': 'audio/mpeg',
   '.bin': 'application/octet-stream'
 };
 
@@ -155,7 +156,7 @@ Server.prototype.readCacheItem_ = function(cacheItem, completion) {
     });
   } else {
     var stat;
-    var filename = Path.join(process.cwd(), uri);
+    var filename = decodeURIComponent(Path.join(process.cwd(), uri));
     try {
       stat = Fs.statSync(filename);
       if(stat.isDirectory()) {
@@ -215,7 +216,7 @@ Server.prototype.compileJavascript_ = function(completion) {
   var options = { maxBuffer: 1024 * 1024 * 5 };
   var compilerPath = Path.join(this.launchPath_, 'tools', 'closure_compiler.jar');
 
-  ChildProcess.exec('python ../closure/bin/calcdeps.py -i js/Application.js -o script --compiler_jar ' + compilerPath +  ' -p ../closure -p js', options, function(error, stdout, stderr) {
+  ChildProcess.exec('java -jar ' + compilerPath + ' --dependency_mode STRICT --js_module_root out/ --entry_point Application --module_resolution LEGACY \'out/**.js\'', options, function(error, stdout, stderr) {
     completion(stdout);
   });
 };
