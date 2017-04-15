@@ -120,6 +120,11 @@ Game.prototype.onStartGamePacket_ = function(player, message) {
   player.started = true;
   player.ship = message[0];
 
+  // Make sure the first reply is a clock sync so the client has a good time
+  // estimate before any additional state changes take place. Yes, the start game
+  // packet acts as both a state sync request and a clock sync request.
+  this.onClockSyncPacket_(player, message.slice(1));
+
   player.send(Protocol.buildPrizeSeedUpdate(this.prizeSeed_, this.prizeSeedTimestamp_));
 
   this.flags_.forEach(function(flag) {
