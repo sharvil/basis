@@ -132,6 +132,8 @@ def convertToJson(settings):
   jsonSettings['map'] = collections.OrderedDict({
     'width': 1024,
     'height': 1024,
+    'tileWidth': 16,
+    'tileHeight': 16,
     'spawnRadius': 500
   })
   jsonSettings['prize'] = collections.OrderedDict({
